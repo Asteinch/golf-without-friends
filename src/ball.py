@@ -28,42 +28,34 @@ class Ball:
         
     def update(self):
 
-
-        if self.in_hole:
-
-            self.frames_since_goal += 1
-            self.sprite = pygame.transform.scale(self.sprite, (25 - self.frames_since_goal, 25- self.frames_since_goal))
-            self.sprite = pygame.transform.rotate(self.sprite, 5)
-
-            self.x = self.hole_pos[0] + self.sprite.get_width() / 2
-            self.y = self.hole_pos[1] + self.sprite.get_height() / 2
-
         if (self.x, self.y) != (0,0):
 
             self.x += self.vel[0]
             self.y += self.vel[1]
 
+            # Applies friciton when the ball moves to the right
             if self.vel[0] > 0:
                 self.vel = (self.vel[0] - abs(self.x_friction), self.vel[1])
                 if self.vel[0] < 0:
-                    self.vel = (0, self.vel[1])
+                    self.vel = (0, self.vel[1]) 
 
-            if self.vel[1] > 0:
-                self.vel = (self.vel[0], self.vel[1] - abs(self.y_friction))
-                if self.vel[1] < 0:
-                    self.vel = (self.vel[0], 0)
-
+            # Applies friciton when the ball moves to the left
             if self.vel[0] < 0:
                 self.vel = (self.vel[0] + abs(self.x_friction), self.vel[1])
                 if self.vel[0] > 0:
                     self.vel = (0, self.vel[1])
 
+            # Applies friciton when the ball moves down
+            if self.vel[1] > 0:
+                self.vel = (self.vel[0], self.vel[1] - abs(self.y_friction))
+                if self.vel[1] < 0:
+                    self.vel = (self.vel[0], 0)
+
+            # Applies friciton when the ball moves up
             if self.vel[1] < 0:
                 self.vel = (self.vel[0], self.vel[1] + abs(self.y_friction))
                 if self.vel[1] > 0:
                     self.vel = (self.vel[0], 0)
-
-            #self.rect = pygame.Rect(self.x, self.y, 25, 25)
 
     def collision(self, obs, hole):
 
@@ -72,7 +64,7 @@ class Ball:
 
             self.vel = (self.vel[0] * -1, self.vel[1])
             
-        if self.y + self.vel[1]> 800 - self.sprite.get_height() or self.y + self.vel[1] < 0:
+        if self.y + self.vel[1] > 800 - self.sprite.get_height() or self.y + self.vel[1] < 0:
             
             self.vel = (self.vel[0], self.vel[1] * -1)
 
@@ -87,25 +79,32 @@ class Ball:
 
         # Hole Collisions
 
-
         if pygame.Rect(self.x - (self.vel[0]), self.y - (self.vel[1]), self.sprite.get_width(), self.sprite.get_height()).colliderect(hole.rect):
             self.vel = (0, 0)
-            self.in_hole = True
+            self.goal_animation()
+
+
+    def goal_animation(self):
+
+        self.frames_since_goal += 1
+        self.sprite = pygame.transform.scale(self.sprite, (25 - self.frames_since_goal, 25- self.frames_since_goal))
+        self.sprite = pygame.transform.rotate(self.sprite, 5)
+
+        self.x = self.hole_pos[0] + self.sprite.get_width() / 2
+        self.y = self.hole_pos[1] + self.sprite.get_height() / 2
+
+    def win_state(self):
+
+
+        if self.sprite.get_height() == 7:
+
+            return True
 
     def get_hole_pos(self, holepos):
 
         self.hole_pos = holepos 
             
-
-
-
     def draw(self, win):
 
         win.blit(self.sprite, (self.x, self.y))
 
-    def draw_rect(self, win):
-
-        pygame.draw.rect(win, "red", (self.x + (self.vel[0]), self.y + (self.vel[1]), self.sprite.get_width(), self.sprite.get_height()))
-
-"""
-                """
