@@ -15,8 +15,8 @@ class Course:
 
     def draw_course(self, win):
 
-        for COL in range(0, self.tiles + 1):
-            for ROW in range(0, self.tiles + 1):
+        for COL in range(0, self.tiles):
+            for ROW in range(0, self.tiles):
                 if (ROW + COL) % 2 == 0:
                     win.blit(self.bgs[0], (self.tile_size * ROW, self.tile_size * COL))
                 else:
