@@ -1,17 +1,24 @@
-import pygame, math
+import pygame
+pygame.init()
 
 from src.ball import Ball
 from src.course import Course
 from src.obstacle import Obstacle
 from src.hole import Hole
 
+from settings import *
+
 class Game:
 
     def __init__(self):
 
-        self.win = pygame.display.set_mode((800, 800))
+        self.win = pygame.display.set_mode((800, 850))
         pygame.display.set_caption("Golf Without Friends!")
         self.clock = pygame.time.Clock()
+
+        self.font = pygame.font.Font(RES_PATH + "font.ttf", 25)
+
+        self.score_filter_img = pygame.image.load(RES_PATH  + "filter.png")
 
         self.is_draw_line = False
         self.line_pos = [(), ()]
@@ -21,11 +28,11 @@ class Game:
 
     def setup_objects(self):
 
-        self.ball = Ball((16, 17))
         self.course = Course(800)
-        self.hole = Hole((5, 13))
 
         self.load_level(self.level)
+        self.level_font = self.font.render("Level: " + str(self.level), True, "white")
+        self.stroke_font = self.font.render("Strokes: " + str(self.strokes), True, "white")
 
     def update_objects(self):
 
@@ -33,9 +40,10 @@ class Game:
         self.ball.collision(self.obstacles, self.hole)
 
         if self.ball.win_state():
-            print("cock")
             self.level += 1
+            self.strokes = 0
             self.load_level(self.level)
+            self.level_font = self.font.render("Level: " + str(self.level), True, "white")
 
         pygame.display.update()
         self.clock.tick(60)
@@ -56,6 +64,10 @@ class Game:
         if self.is_draw_line:
             pygame.draw.line(self.win, "red", self.line_pos[0], pygame.mouse.get_pos(), 10)
 
+        self.win.blit(self.score_filter_img, (0, 800))
+
+        self.win.blit(self.level_font, (10, 810))
+        self.win.blit(self.stroke_font, (150, 810))
 
 
     def check_for_input(self):
@@ -82,11 +94,17 @@ class Game:
                 self.is_draw_line = False
 
                 self.strokes += 1
+                self.stroke_font = self.font.render("Strokes: " + str(self.strokes), True, "white")
 
 
     def load_level(self, level):
 
         if level == 1:
+
+            self.ball = Ball((16, 17))
+
+            self.hole = Hole((5, 13))
+
             self.obstacles = [Obstacle((2, 7), (0, 0)),
                 Obstacle((6, 1), (7, 6)),
                 Obstacle((1, 13), (12, 7)),
@@ -100,8 +118,29 @@ class Game:
                 Obstacle((1, 2), (11, 2))]
             
         if level == 2:
-            self.obstacles = []
-            self.ball = Ball((16, 17))
+
+            self.ball = Ball((18, 18))
+
+            self.hole = Hole((10, 8))
+
+            self.obstacles = [
+                Obstacle((1, 18), (1, 0)),
+                Obstacle((16, 1), (2, 0)),
+                Obstacle((1, 17), (18, 0)),
+                Obstacle((14, 1), (4, 16)),
+                Obstacle((1, 15), (4, 2)),
+                Obstacle((5, 1), (5, 2)),
+                Obstacle((5, 1), (11, 2)),
+                Obstacle((1, 10), (15, 3)),
+                Obstacle((9, 1), (7, 13)),
+                Obstacle((1, 4), (6, 10)),
+                Obstacle((1, 4), (6, 5)),
+                Obstacle((6, 1), (7, 5)),
+                Obstacle((1, 5), (12, 6)),
+                Obstacle((4, 1), (8, 10)),
+                Obstacle((1, 2), (8, 8))
+            ]
+ 
             
 
             
